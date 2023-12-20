@@ -256,8 +256,10 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
                 getType(this),
                 hashCode);
 
-            for (var j = 0; j < arguments.length; j++) {
-                console.log(retraction, "\x1B[37m" + "arg[" + j + "]: " + arguments[j], getType(arguments[j]));
+            if (detailedLog()){
+                for (var j = 0; j < arguments.length; j++) {
+                    console.log(retraction, "\x1B[37m" + "arg[" + j + "]: " + arguments[j], getType(arguments[j]));
+                }
             }
         }
         var obj = this;
@@ -278,11 +280,16 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
             }
         }
 
+        var showRet = ""
+        if (detailedLog()){
+            showRet = retrieval
+        }
+
         if (showLog) {
             console.warn(retraction,
                 "\x1B[30m[" + targetMethod + "](agrs=" + arguments.length + ")",
-                "\x1B[34mreturn: " + retrieval,
-                "\x1B[30mclass: " + getType(retrieval),
+                "\x1B[34mreturn: " + showRet,
+                "\x1B[30mclass: " + getType(showRet),
                 callTime,
                 // formatDate(),
                 " Took time :" + (new Date().getTime() - startTime) + "ms");
@@ -313,6 +320,10 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
     }
 }
 
+function detailedLog(){
+    return true
+}
+
 function showLogIfNeed(obj, methodName, targetClass, args, retraction, threadName) {
 
     return true;
@@ -338,13 +349,7 @@ Java.perform(
     function () {
         console.log()
         const hooks = [
-            // {className: "android.preference.SeekBarVolumizer$H", methodName: 'postUpdateSlider', parameters: undefined},
-            // {className: "android.preference.SeekBarVolumizer$Receiver", methodName: 'updateVolumeSlider', parameters: undefined},
-            // {className: "android.widget.SeekBar", methodName: 'onProgressRefresh', parameters: undefined},
-            // {className: "android.media.AudioManager", methodName: 'setStreamVolume', parameters: undefined},
-            // {className: "android.preference.SeekBarVolumizer", methodName: 'postSetVolume', parameters: undefined},
-            {className: "com.android.settings.accessibility.ToggleAccessibilityServicePreferenceFragment", methodName: undefined, parameters: undefined},
-            // {className: "android.preference.SeekBarVolumizer", methodName: 'updateSlider', parameters: undefined},
+            // {className: "android.view.ViewRootImpl", methodName: 'getWindowInsets', parameters: undefined},
         ];
 
 
