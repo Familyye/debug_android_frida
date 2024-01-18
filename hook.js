@@ -314,6 +314,15 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
             case 5:
                 hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]).implementation = func
                 break
+            case 6:
+                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]).implementation = func
+                break
+            case 7:
+                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5], parameters[6]).implementation = func
+                break
+            default:
+                console.log("参数超出限制！！！ break")
+                break
         }
     }else {
         hook[targetMethod].overloads[i].implementation = func
@@ -349,7 +358,9 @@ Java.perform(
     function () {
         console.log()
         const hooks = [
-            // {className: "android.view.ViewRootImpl", methodName: 'getWindowInsets', parameters: undefined},
+            {className: "com.transsion.bluetooth.BluetoothLhdcUtils", methodName: undefined, parameters: undefined},
+
+
         ];
 
 
