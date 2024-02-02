@@ -340,6 +340,7 @@ function showLogIfNeed(obj, methodName, targetClass, args, retraction, threadNam
 
 function onMethodEnter(obj, methodName, targetClass, args, retraction, showLog) {
     if (showLog) {
+        // console.log(retraction, args[0].info.value.packageName.value)
 
     }
     return args
@@ -350,6 +351,7 @@ function onMethodExit(obj, methodName, targetClass, args, ret, retraction, showL
     if (showLog) {
 
 
+        // printStackTrace()
     }
     return ret
 }
@@ -358,8 +360,9 @@ Java.perform(
     function () {
         console.log()
         const hooks = [
-            {className: "com.transsion.bluetooth.BluetoothLhdcUtils", methodName: undefined, parameters: undefined},
+            // {className: "com.android.settings.accessibility.TranCaptionMoreOptionsFragment", methodName: undefined  , parameters: undefined},
 
+            {className: "com.android.settings.datausage.UnrestrictedDataAccessPreferenceController", methodName: 'rebuild'  , parameters: undefined},
 
         ];
 
