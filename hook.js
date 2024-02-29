@@ -14,10 +14,9 @@ const String = Java.use("java.lang.String")
 const Modifier = Java.use("java.lang.reflect.Modifier")
 
 
-
 //打印堆栈
 function printStackTrace(retraction = "", methodName = "") {
-    let bt = Log.getStackTraceString(Exception.$new("调用栈:->" +methodName));
+    let bt = Log.getStackTraceString(Exception.$new("调用栈:->" + methodName));
     console.log(retraction, bt);
 }
 
@@ -38,7 +37,7 @@ function printObj(obj, filter) {
                 }
             } else if (filter === undefined) {
                 if (typeof obj[key] == "object") {
-                    console.log("field is", key, obj[key].value ,getType(obj[key].value))
+                    console.log("field is", key, obj[key].value, getType(obj[key].value))
                 }
             }
         }
@@ -93,16 +92,16 @@ function getType(obj) {
     return type
 }
 
-function getListType(list){
-    console.log("ss " , list[0].className)
+function getListType(list) {
+    console.log("ss ", list[0].className)
     let str = ""
-    for (let i= 0; i < list.length; i++){
+    for (let i = 0; i < list.length; i++) {
         str += getType(list[i]) + ","
     }
     return str
 }
 
-function sleep(time){
+function sleep(time) {
     Thread.sleep(time)
 }
 
@@ -190,8 +189,8 @@ function traceClass(className, methodName, parameters) {
             }
 
 
-            if ((!arg.getName().startsWith("$"))&& foundMethod) {
-                if (!parameters || parameters.length === arg.getParameterCount()){
+            if ((!arg.getName().startsWith("$")) && foundMethod) {
+                if (!parameters || parameters.length === arg.getParameterCount()) {
                     traceMethod(className + "." + arg.getName(), parameters, arg);
                 }
             }
@@ -213,13 +212,13 @@ function traceMethod(targetClassMethod, parameters, method) {
     let overloadCount = hook[targetMethod].overloads.length;
 
     let MethodDesc = {};
-    if (method){
+    if (method) {
         MethodDesc.isStatic = Modifier.isStatic(method.getModifiers())
         // MethodDesc.parameterCount = method.getParameterCount()
         // MethodDesc.parameterTypes = method.getGenericParameterTypes()
     }
 
-    if (parameters ) {
+    if (parameters) {
         realHook(hook, targetMethod, targetClass, -1, targetClassMethod, MethodDesc, parameters)
         console.log("\x1B[35mTracing " + targetClassMethod + " [" + parameters + "] " + MethodDesc.isStatic, ++TracingCount);
     } else {
@@ -243,27 +242,27 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
             }
         }
 
-        const showLog = showLogIfNeed(this, targetClassMethod, targetClass , arguments, retraction, Thread.currentThread().getName());
+        const showLog = showLogIfNeed(this, targetClassMethod, targetClass, arguments, retraction, Thread.currentThread().getName());
         if (showLog) {
             let hashCode;
-            if (MethodDesc.isStatic){
+            if (MethodDesc.isStatic) {
                 hashCode = '***Static***'
-            }else {
+            } else {
                 hashCode = this.hashCode()
             }
-            console.log(retraction, "\x1B[32m[" + targetMethod + "](agrs=" + arguments.length + ")" ,
+            console.log(retraction, "\x1B[32m[" + targetMethod + "](agrs=" + arguments.length + ")",
                 Thread.currentThread().getName(),
                 getType(this),
                 hashCode);
 
-            if (detailedLog()){
+            if (detailedLog()) {
                 for (var j = 0; j < arguments.length; j++) {
                     console.log(retraction, "\x1B[37m" + "arg[" + j + "]: " + arguments[j], getType(arguments[j]));
                 }
             }
         }
         var obj = this;
-        if (MethodDesc.isStatic){
+        if (MethodDesc.isStatic) {
             obj = null
         }
         const agrs = onMethodEnter(obj, targetClassMethod, targetClass, arguments, retraction, showLog);
@@ -272,16 +271,16 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
         const callTime = formatDate();
         let retrieval;
         if (agrs !== NOT_CALL) {
-            if (MethodDesc.isStatic){
+            if (MethodDesc.isStatic) {
                 let clazz = Java.use(targetClass);
                 retrieval = clazz[targetMethod].apply(clazz, agrs);
-            }else {
+            } else {
                 retrieval = this[targetMethod].apply(this, agrs);
             }
         }
 
         var showRet = ""
-        if (detailedLog()){
+        if (detailedLog()) {
             showRet = retrieval
         }
 
@@ -297,8 +296,8 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
         return onMethodExit(this, targetClassMethod, targetClass, arguments, retrieval, retraction, showLog);
     }
 
-    if (parameters){
-        switch (parameters.length){
+    if (parameters) {
+        switch (parameters.length) {
             case 1:
                 hook[targetMethod].overload(parameters[0]).implementation = func
                 break
@@ -324,12 +323,12 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
                 console.log("参数超出限制！！！ break")
                 break
         }
-    }else {
+    } else {
         hook[targetMethod].overloads[i].implementation = func
     }
 }
 
-function detailedLog(){
+function detailedLog() {
     return true
 }
 
@@ -351,6 +350,16 @@ function onMethodExit(obj, methodName, targetClass, args, ret, retraction, showL
     if (showLog) {
 
 
+        console.log(retraction, ret.size())
+
+        for (var i = 0; i < ret.size(); i++) {
+
+            var v = Java.cast(ret.get(i), Java.use("android.hardware.fingerprint.Fingerprint"))
+
+            printObj(v)
+        }
+
+
         // printStackTrace()
     }
     return ret
@@ -362,7 +371,11 @@ Java.perform(
         const hooks = [
             // {className: "com.android.settings.accessibility.TranCaptionMoreOptionsFragment", methodName: undefined  , parameters: undefined},
 
-            {className: "com.android.settings.datausage.UnrestrictedDataAccessPreferenceController", methodName: 'rebuild'  , parameters: undefined},
+            {
+                className: "android.hardware.fingerprint.FingerprintManager",
+                methodName: "getEnrolledFingerprints",
+                parameters: undefined
+            },
 
         ];
 

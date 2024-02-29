@@ -29,3 +29,9 @@
 
 // 使用：
 // frida -U  设置 -l E:/dev/FridaHookJS/hook.js  or  frida -U  -f com.android.settings -l E:/dev/FridaHookJS/hook.js
+
+distributionUrl=https://mirrors.cloud.tencent.com/gradle/gradle-8.2-bin.zip
+maven { url=uri("https://maven.aliyun.com/repository/gradle-plugin")}
+maven { url=uri("https://maven.aliyun.com/repository/google")}
+maven { url=uri("https://maven.aliyun.com/repository/central")}
+maven { url=uri("https://maven.aliyun.com/repository/public")}
