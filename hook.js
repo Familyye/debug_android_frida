@@ -350,19 +350,9 @@ function onMethodExit(obj, methodName, targetClass, args, ret, retraction, showL
     if (showLog) {
 
 
-        console.log(retraction, ret.size())
-
-        for (var i = 0; i < ret.size(); i++) {
-
-            var v = Java.cast(ret.get(i), Java.use("android.hardware.fingerprint.Fingerprint"))
-
-            printObj(v)
-        }
-
-
         // printStackTrace()
     }
-    return ret
+    return 0
 }
 
 Java.perform(
@@ -372,8 +362,8 @@ Java.perform(
             // {className: "com.android.settings.accessibility.TranCaptionMoreOptionsFragment", methodName: undefined  , parameters: undefined},
 
             {
-                className: "android.hardware.fingerprint.FingerprintManager",
-                methodName: "getEnrolledFingerprints",
+                className: "com.android.settings.network.telephony.WifiCallingPreferenceController",
+                methodName: "getAvailabilityStatus",
                 parameters: undefined
             },
 

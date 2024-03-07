@@ -35,3 +35,6 @@ maven { url=uri("https://maven.aliyun.com/repository/gradle-plugin")}
 maven { url=uri("https://maven.aliyun.com/repository/google")}
 maven { url=uri("https://maven.aliyun.com/repository/central")}
 maven { url=uri("https://maven.aliyun.com/repository/public")}
+
+开启调试
+adb shell setprop persist.debug.dalvik.vm.jdwp.enabled 1
