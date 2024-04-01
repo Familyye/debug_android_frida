@@ -1,17 +1,14 @@
-let TracingCount = 0;
-const NOT_CALL = "HOOK_JS"
-//获取类的引用
-//var cls = Java.use('这里写类名');
-//调用构造函数 创建新对象  这里注意参数
-//var obj = cls.$new();
-//调用新对象的对象方法 enc
-//str_ret = obj.enc(str_data)；
+
+/**
+ * Some frequently used classes, get instance:cls.$new()
+ * */
 const Thread = Java.use("java.lang.Thread")
 const Log = Java.use("android.util.Log")
 const Binder = Java.use('android.os.Binder')
 const Exception = Java.use("java.lang.Exception")
 const String = Java.use("java.lang.String")
 const Modifier = Java.use("java.lang.reflect.Modifier")
+
 
 
 //打印堆栈
@@ -108,58 +105,9 @@ function sleep(time) {
 
 /* ------------------------ util  ----------------------------- */
 
-//内存中查找实例
-function findMethod(findClazz) {
-    Java.choose(findClazz,
-        {
-            onMatch: function (instance) {
 
-                console.log(instance);
-
-            },
-            onComplete: function () {
-
-            }
-        }
-    );
-}
-
-// trace Module functions
-function traceModule(impl, name) {
-    console.log("Tracing " + name);
-
-    Interceptor.attach(impl, {
-
-        onEnter: function (args) {
-
-            // debug only the intended calls
-            this.flag = false;
-            // var filename = Memory.readCString(ptr(args[0]));
-            // if (filename.indexOf("XYZ") === -1 && filename.indexOf("ZYX") === -1) // exclusion list
-            // if (filename.indexOf("my.interesting.file") !== -1) // inclusion list
-            this.flag = true;
-
-            if (this.flag) {
-                console.warn("\n*** entered " + name);
-
-                // print backtrace
-                console.log("\nBacktrace:\n" + Thread.backtrace(this.context, Backtracer.ACCURATE)
-                    .map(DebugSymbol.fromAddress).join("\n"));
-            }
-        },
-
-        onLeave: function (retval) {
-
-            if (this.flag) {
-                // print retval
-                console.log("\nretval: " + retval);
-                console.warn("\n*** exiting " + name);
-            }
-        }
-
-    });
-}
-
+let TracingCount = 0;
+const NOT_CALL = "NOT_CALL"
 // step 1
 function traceClass(className, methodName, parameters) {
     const hook = Java.use(className);
@@ -187,8 +135,6 @@ function traceClass(className, methodName, parameters) {
             } else {
                 foundMethod = arg.getName().indexOf(methodName.replace("*", "") !== -1) !== -1
             }
-
-
             if ((!arg.getName().startsWith("$")) && foundMethod) {
                 if (!parameters || parameters.length === arg.getParameterCount()) {
                     traceMethod(className + "." + arg.getName(), parameters, arg);
@@ -297,32 +243,7 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
     }
 
     if (parameters) {
-        switch (parameters.length) {
-            case 1:
-                hook[targetMethod].overload(parameters[0]).implementation = func
-                break
-            case 2:
-                hook[targetMethod].overload(parameters[0], parameters[1]).implementation = func
-                break
-            case 3:
-                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2]).implementation = func
-                break
-            case 4:
-                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3]).implementation = func
-                break
-            case 5:
-                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]).implementation = func
-                break
-            case 6:
-                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]).implementation = func
-                break
-            case 7:
-                hook[targetMethod].overload(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5], parameters[6]).implementation = func
-                break
-            default:
-                console.log("参数超出限制！！！ break")
-                break
-        }
+        hook[targetMethod].overload(...parameters).implementation = func
     } else {
         hook[targetMethod].overloads[i].implementation = func
     }
@@ -339,8 +260,8 @@ function showLogIfNeed(obj, methodName, targetClass, args, retraction, threadNam
 
 function onMethodEnter(obj, methodName, targetClass, args, retraction, showLog) {
     if (showLog) {
-        // console.log(retraction, args[0].info.value.packageName.value)
-
+        // console.log(retraction, obj.mPreferenceKey.value)
+        // printStackTrace()
     }
     return args
 
@@ -349,26 +270,29 @@ function onMethodEnter(obj, methodName, targetClass, args, retraction, showLog) 
 function onMethodExit(obj, methodName, targetClass, args, ret, retraction, showLog) {
     if (showLog) {
 
-
         // printStackTrace()
+        // printObj(ret)
+        // console.log(retraction,getType(ret))
     }
-    return 0
+    return ret
 }
 
+/**
+ * className: The full class name that needs to be hooked,such as: java.util.ArrayList
+ * methodName: Method name that needs to be hooked, such as: add,If undefined, hook all methods
+ * parameters: String array,The parameter type of the method that needs to be hooked,
+ * If undefined, hook all overridden methods
+ * */
 Java.perform(
     function () {
         console.log()
         const hooks = [
-            // {className: "com.android.settings.accessibility.TranCaptionMoreOptionsFragment", methodName: undefined  , parameters: undefined},
-
             {
-                className: "com.android.settings.network.telephony.WifiCallingPreferenceController",
-                methodName: "getAvailabilityStatus",
-                parameters: undefined
-            },
-
+                className: "java.util.ArrayList",
+                methodName: 'add',
+                parameters: ['java.lang.Object', '[Ljava.lang.Object;', 'int']
+            }
         ];
-
 
         hooks.forEach(function (obj) {
             traceClass(obj.className, obj.methodName, obj.parameters)
