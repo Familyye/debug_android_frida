@@ -9,3 +9,4 @@ maven { url=uri("https://maven.aliyun.com/repository/public")}
 
 ### debug   
 adb shell setprop persist.debug.dalvik.vm.jdwp.enabled 1
+
