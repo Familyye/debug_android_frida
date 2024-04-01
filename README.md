@@ -8,7 +8,7 @@
 
 ### Server：
 adb root  
-adb push E:/dev/FridaHookJS/frida-server-16.1.4 /data/local/tmp/  
+adb push E:/dev/FridaHookJS/libs/frida-server-16.1.4 /data/local/tmp/  
 adb shell "chmod 755 /data/local/tmp/frida-server-16.1.4"  
 adb device  
 adb shell "/data/local/tmp/frida-server-16.1.4 &"  
