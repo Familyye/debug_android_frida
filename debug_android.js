@@ -1,4 +1,3 @@
-
 /**
  * Some frequently used classes, get instance:cls.$new()
  * */
@@ -10,14 +9,19 @@ const String = Java.use("java.lang.String")
 const Modifier = Java.use("java.lang.reflect.Modifier")
 
 
+/* ------------------------ util  start----------------------------- */
 
-//打印堆栈
+/**
+ * Print stack
+ */
 function printStackTrace(retraction = "", methodName = "") {
     let bt = Log.getStackTraceString(Exception.$new("调用栈:->" + methodName));
     console.log(retraction, bt);
 }
 
-//打印对象属性值 或 调用对象的方法
+/**
+* Print object property values, or call an object's method
+*/
 function printObj(obj, filter) {
     if (obj == null) {
         console.log("obj is null ? " + obj)
@@ -41,15 +45,23 @@ function printObj(obj, filter) {
     }
 }
 
+/**
+*android uid
+*/
 function getUid() {
     return Binder.getCallingUid()
 }
 
+/**
+*pid
+*/
 function getPid() {
     return Binder.getCallingPid()
 }
 
-//列表转string
+/**
+*list to string
+*/
 function list2String(list) {
     let str = "Size=" + list.size() + " [";
     for (let i = 0; i < list.size(); i++) {
@@ -64,6 +76,9 @@ function list2String(list) {
     return str
 }
 
+/**
+*date
+*/
 function formatDate() {
     const date = new Date()
     const year = date.getFullYear()
@@ -77,10 +92,16 @@ function formatDate() {
     return currentTime
 }
 
+/**
+*get stack
+*/
 function getStackTrace() {
     return Thread.currentThread().getStackTrace();
 }
 
+/**
+*get type of obj
+*/
 function getType(obj) {
     let type = typeof obj
     if (type === "object" && obj !== null) {
@@ -89,8 +110,10 @@ function getType(obj) {
     return type
 }
 
+/**
+*get type of list
+*/
 function getListType(list) {
-    console.log("ss ", list[0].className)
     let str = ""
     for (let i = 0; i < list.length; i++) {
         str += getType(list[i]) + ","
@@ -98,37 +121,41 @@ function getListType(list) {
     return str
 }
 
+/**
+*android sleep
+*/
 function sleep(time) {
     Thread.sleep(time)
 }
 
 
-/* ------------------------ util  ----------------------------- */
+/* ------------------------ util  end----------------------------- */
 
 
 let TracingCount = 0;
 const NOT_CALL = "NOT_CALL"
+
+
 // step 1
 function traceClass(className, methodName, parameters) {
     const hook = Java.use(className);
     const methods = hook.class.getDeclaredMethods();
     hook.$dispose;
-
-
+    // 1. will hook all methods if methodName is undefined
+    // 2. will hook constructor function if methodName is '$init'
+    // 3. else hook ths specified method
     if (methodName === undefined || methodName === "") {
-        // hook所有方法
         methods.forEach(function (arg) {
             if (!arg.getName().startsWith("$")) {
                 traceMethod(className + "." + arg.getName(), parameters, arg);
             }
         });
     } else if (methodName === "$init") {
-        //构造函数
         traceMethod(className + ".$init", parameters, null);
     } else {
-        // hook多个方法，用 || 分割
         methods.forEach(function (arg) {
-            //非$开头的方法  和  * 通配包含的方法
+            // Regular expressions are not yet supported
+            // May support in the future
             let foundMethod;
             if (methodName.indexOf("*") === -1) {
                 foundMethod = arg.getName() === methodName
@@ -178,7 +205,6 @@ function traceMethod(targetClassMethod, parameters, method) {
 // step 3
 function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodDesc, parameters) {
     let func = function () {
-        // console.log()
         let retraction = "    ";
         const stackTraces = getStackTrace()
         for (let i = 2; i < stackTraces.length; i++) {
@@ -192,7 +218,7 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
         if (showLog) {
             let hashCode;
             if (MethodDesc.isStatic) {
-                hashCode = '***Static***'
+                hashCode = '***static***'
             } else {
                 hashCode = this.hashCode()
             }
@@ -249,19 +275,18 @@ function realHook(hook, targetMethod, targetClass, i, targetClassMethod, MethodD
     }
 }
 
+/* ------------------------ interface  start----------------------------- */
 function detailedLog() {
     return true
 }
 
 function showLogIfNeed(obj, methodName, targetClass, args, retraction, threadName) {
-
     return true;
 }
 
 function onMethodEnter(obj, methodName, targetClass, args, retraction, showLog) {
     if (showLog) {
-        // console.log(retraction, obj.mPreferenceKey.value)
-        // printStackTrace()
+
     }
     return args
 
@@ -270,27 +295,25 @@ function onMethodEnter(obj, methodName, targetClass, args, retraction, showLog) 
 function onMethodExit(obj, methodName, targetClass, args, ret, retraction, showLog) {
     if (showLog) {
 
-        // printStackTrace()
-        // printObj(ret)
-        // console.log(retraction,getType(ret))
     }
     return ret
 }
+/* ------------------------ interface  end----------------------------- */
 
 /**
  * className: The full class name that needs to be hooked,such as: java.util.ArrayList
  * methodName: Method name that needs to be hooked, such as: add,If undefined, hook all methods
  * parameters: String array,The parameter type of the method that needs to be hooked,
- * If undefined, hook all overridden methods
+ * if undefined, hook all overridden methods
  * */
 Java.perform(
     function () {
         console.log()
         const hooks = [
             {
-                className: "java.util.ArrayList",
-                methodName: 'add',
-                parameters: ['java.lang.Object', '[Ljava.lang.Object;', 'int']
+                className: 'android.util.Log',
+                methodName: 'd',
+                parameters: undefined
             }
         ];
 

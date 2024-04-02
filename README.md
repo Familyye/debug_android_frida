@@ -14,8 +14,8 @@
     adb shell "/data/local/tmp/frida-server-16.1.4 &"  
 
 ### Run：
-    frida -U  设置 -l E:/dev/FridaHookJS/hook.js   
-    frida -U  -f com.android.settings -l E:/dev/FridaHookJS/hook.js
+    frida -U  设置 -l E:/dev/FridaHookJS/debug_android.js   
+    frida -U  -f com.android.settings -l E:/dev/FridaHookJS/debug_android.js
 
 # frida releases
 https://github.com/frida/frida/releases
