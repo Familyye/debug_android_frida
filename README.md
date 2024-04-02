@@ -1,5 +1,12 @@
 
 ## Guidelines
+android调试工具，可实现
+1 输出需调试方法的参数、返回值
+2 修改调试方法返回值
+3 输出调试方法堆栈
+4 跳过指定方法不执行
+5 ...
+
 ### Client：  
 1 安装Python 3  
 2 Frida安装 pip install frida -i https://pypi.mirrors.ustc.edu.cn/simple/  pip install frida-tools -i https://pypi.mirrors.ustc.edu.cn/simple/  
